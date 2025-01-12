@@ -5,7 +5,25 @@ const {Schema, model} = require("mongoose")
 const app = express()
 app.use(express.json())
 const port = 10000
+const mongoUrl = "mongodb+srv://aarishansari08:NiiBJDnVJz30Lqhp@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
+
+const connection = async () =>{
+    try {
+        console.log("DB conected");
+        const conn= await mongoose.connect(mongoUrl)
+        console.log("DB conected");
+        }
+    catch(error)
+    {
+        console.error(error.message);
+    }
+}
+
+connection();
+
+
+/*
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://aarishansari08:NiiBJDnVJz30Lqhp@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,10 +47,10 @@ async function run() {
   }
 }
 run().catch(console.dir);
+*/
 
 
 
-//const mongoUrl = "mongodb+srv://aarishansari08:NiiBJDnVJz30Lqhp@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 //schma and model
 const userSchema = new Schema({
@@ -49,21 +67,7 @@ const userSchema = new Schema({
 const User = model("User", userSchema)
 
 //DB and connection
-/*
-const connection = async () =>{
-    try {
-        console.log("DB conected");
-        const conn= await mongoose.connect(mongoUrl)
-        console.log("DB conected");
-        }
-    catch(error)
-    {
-        console.error(error.message);
-    }
-}
 
-connection();
-*/
 
 //CRUD operations
 
