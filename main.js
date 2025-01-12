@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 const {Schema, model} = require("mongoose")
 const app = express()
 app.use(express.json())
-const port = 3000
+const port = 10000
 
 //schma and model
 const userSchema = new Schema({
