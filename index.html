@@ -97,10 +97,11 @@ app.delete('/:id', async(req, res)=>{
         res.status(500).json({message: error.message});
     }
 })
-</script>
 
 
 app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`)
 })
 
+
+</script>
