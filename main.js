@@ -5,7 +5,7 @@ const {Schema, model} = require("mongoose")
 const app = express()
 app.use(express.json())
 const port = 10000
-const mongoUrl = "mongodb+srv://aarishansari08:liF0pLlIy5d4AxMP@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const mongoUrl = "mongodb+srv://aarishansari08:NiiBJDnVJz30Lqhp@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 //schma and model
 const userSchema = new Schema({
