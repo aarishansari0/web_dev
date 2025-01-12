@@ -1,7 +1,4 @@
-<html>
-</html>
 
-<script>
 const express = require("express")
 const mongoose = require("mongoose")
 const {Schema, model} = require("mongoose")
@@ -107,4 +104,3 @@ app.listen(port, ()=>{
 })
 
 
-</script>
