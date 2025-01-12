@@ -5,6 +5,7 @@ const {Schema, model} = require("mongoose")
 const app = express()
 app.use(express.json())
 const port = 10000
+const mongoUrl = "mongodb+srv://aarishansari08:liF0pLlIy5d4AxMP@cluster0.v3plw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 //schma and model
 const userSchema = new Schema({
@@ -24,7 +25,7 @@ const User = model("User", userSchema)
 const connection = async () =>{
     try {
         console.log("DB conected");
-        const conn= await mongoose.connect("mongodb+srv://aarishansari08:liF0pLlIy5d4AxMP@cluster0.v3plw.mongodb.net/", {useNewUrlParser: true})
+        const conn= await mongoose.connect(mongoUrl)
         console.log("DB conected");
         }
     catch(error)
