@@ -47,7 +47,7 @@ var winston = require("winston");
 var transports = winston.transports;
 var app = express();
 app.use(express.json());
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 10000;
 var mongoUrl = process.env.mongoUrl;
 var sender = {
     email: process.env.email,
@@ -85,8 +85,10 @@ var logs = [];
 var logger = winston.createLogger({
     level: 'info',
     transports: [
+        new transports.Console(),
         new transports.Http({
-            path: 'https://web-dev-node.onrender.com/logs',
+            host: 'https://web-dev-node.onrender.com',
+            path: '/logs',
             port: process.env.port ? parseInt(process.env.port, 10) : 10000
         })
     ]

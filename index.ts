@@ -15,7 +15,7 @@ const { transports } = winston;
 
 const app = express();
 app.use(express.json());
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 const mongoUrl = process.env.mongoUrl as string;
 
 const sender = 
@@ -70,8 +70,10 @@ let logs: LogEntry[] = [];
 const logger = winston.createLogger({
     level: 'info',
     transports: [
+        new transports.Console(),
         new transports.Http({
-            path: 'https://web-dev-node.onrender.com/logs',
+            host: 'https://web-dev-node.onrender.com',
+            path: '/logs',
             port: process.env.port ? parseInt(process.env.port as string, 10) : 10000
         })
     ]
@@ -85,7 +87,6 @@ app.post('/logs', (req: any, res: any) => {
 app.get('/logs', (req: any, res: any) => {
     res.json(logs);
 });
-
 
 
 const connection = async () => {
