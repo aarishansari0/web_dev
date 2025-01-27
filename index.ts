@@ -72,7 +72,7 @@ const logger = winston.createLogger({
     transports: [
         new transports.Console(),
         new transports.Http({
-            host: 'https://web-dev-node.onrender.com',
+            host: 'web-dev-node.onrender.com',
             path: '/logs',
             port: process.env.port ? parseInt(process.env.port as string, 10) : 10000
         })
