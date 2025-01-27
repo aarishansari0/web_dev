@@ -89,9 +89,13 @@ var logger = winston.createLogger({
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: 10000
+            port: 10000,
+            ssl: true
         })
     ]
+});
+logger.on('error', function (err) {
+    console.error('Error with logger transport:', err); // Log any errors with the transport
 });
 app.post('/logs', function (req, res) {
     logs.push(req.body); // Store received log data
