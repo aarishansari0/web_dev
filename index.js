@@ -88,7 +88,7 @@ var logger = winston.createLogger({
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: process.env.port ? parseInt(process.env.port, 10) : 10000
+            port: 10000
         })
     ]
 });
