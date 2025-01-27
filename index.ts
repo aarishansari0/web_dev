@@ -2,7 +2,6 @@ import express = require('express');
 import { Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
-import { logger, logRoutes } from './logger'
 
 import mongoose, { model, Schema } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
@@ -60,7 +59,33 @@ function send_email(reciever_email: string, subject: string, text: string) {
 
 
 // Logger with Winston
-logRoutes(app)
+interface LogEntry {
+    message: string;
+    level: string;
+    timestamp: string;
+}
+
+let logs: LogEntry[] = [];
+
+const logger = winston.createLogger({
+    level: 'info',
+    transports: [
+        new transports.Http({ 
+            host: process.env.hosting_website as string,
+            path: '/logs',
+            port: process.env.port ? parseInt(process.env.port as string, 10) : 10000
+        })
+    ]
+});
+
+app.post('/logs', (req: any, res: any) => {
+    logs.push(req.body); // Store received log data
+    res.sendStatus(200);
+});
+
+app.get('/logs', (req: any, res: any) => {
+    res.json(logs);
+});
 
 
 
@@ -269,7 +294,3 @@ app.listen(port, () => {
 
 
 
-app.post('/example', (req, res) => {
-    logger.info('Example route called');
-    res.send('Example route');
-});
