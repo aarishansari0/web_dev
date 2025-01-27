@@ -70,9 +70,8 @@ let logs: LogEntry[] = [];
 const logger = winston.createLogger({
     level: 'info',
     transports: [
-        new transports.Http({ 
-            host: process.env.hosting_website as string,
-            path: '/logs',
+        new transports.Http({
+            path: 'https://web-dev-node.onrender.com/logs',
             port: process.env.port ? parseInt(process.env.port as string, 10) : 10000
         })
     ]
