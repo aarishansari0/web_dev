@@ -85,6 +85,7 @@ var logs = [];
 var logger = winston.createLogger({
     level: 'info',
     transports: [
+        new transports.Console(),
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
