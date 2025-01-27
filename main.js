@@ -333,7 +333,7 @@ app.delete('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); });
 app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, password, user, _b, access_token;
+    var _a, email, password, user, _b, log_check, access_token;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -352,7 +352,11 @@ app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0
                     res.status(401).json({ message: "Invalid credentials" });
                     return [2 /*return*/];
                 }
-                logger.info("".concat(email, " logging in"));
+                log_check = logger.info("".concat(email, " logging in"));
+                if (!log_check) {
+                    res.status(401).json({ message: "log not recicevd" });
+                    return [2 /*return*/];
+                }
                 access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN);
                 res.json({ access_token: access_token });
                 return [2 /*return*/];

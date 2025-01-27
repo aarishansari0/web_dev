@@ -259,7 +259,11 @@ app.post("/login", async (req: Request, res: Response): Promise<void> => {
         res.status(401).json({ message: "Invalid credentials"});
         return;
     }
-    logger.info(`${email} logging in`);
+    const log_check = logger.info(`${email} logging in`);
+    if (!log_check) {
+        res.status(401).json({ message: "log not recicevd"});
+        return;
+    }
     const access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN as string);
     res.json({ access_token });
 });
