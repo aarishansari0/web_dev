@@ -47,12 +47,8 @@ var winston = require("winston");
 var transports = winston.transports;
 var app = express();
 app.use(express.json());
-var port = process.env.PORT || 3000;
+var port = process.env.port || 10000;
 var mongoUrl = process.env.mongoUrl;
-var hosting_website = process.env.hosting_website;
-var logger_port = process.env.logger_port || 10001;
-var logger_app = express();
-logger_app.use(express.json());
 var sender = {
     email: process.env.email,
     pass: process.env.pass
@@ -90,21 +86,18 @@ var logger = winston.createLogger({
     level: 'info',
     transports: [
         new transports.Http({
-            host: hosting_website,
+            host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: logger_port
+            port: 10000
         })
     ]
 });
-logger_app.post('/logs', function (req, res) {
+app.post('/logs', function (req, res) {
     logs.push(req.body); // Store received log data
     res.sendStatus(200);
 });
-logger_app.get('/logs', function (req, res) {
+app.get('/logs', function (req, res) {
     res.json(logs);
-});
-logger_app.listen(logger_port, function () {
-    console.log("Logger listening on port ".concat(logger_port, "!"));
 });
 var connection = function () { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
