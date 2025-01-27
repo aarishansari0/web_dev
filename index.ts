@@ -2,6 +2,7 @@ import express = require('express');
 import { Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
+import { logger, logRoutes } from './logger'
 
 import mongoose, { model, Schema } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
@@ -10,17 +11,13 @@ config();
 import * as winston from 'winston';
 import { hash } from 'crypto';
 import { send } from 'process';
+import { log } from 'console';
 const { transports } = winston;
 
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
 const mongoUrl = process.env.mongoUrl as string;
-
-const hosting_website = process.env.hosting_website;
-const logger_port = process.env.logger_port as unknown as number || 10001;
-const logger_app = express();
-logger_app.use(express.json());
 
 const sender = 
 {
@@ -63,37 +60,7 @@ function send_email(reciever_email: string, subject: string, text: string) {
 
 
 // Logger with Winston
-interface LogEntry {
-    message: string;
-    level: string;
-    timestamp: string;
-}
-
-let logs: LogEntry[] = [];
-
-const logger = winston.createLogger({
-    level: 'info',
-    transports: [
-        new transports.Http({ 
-            host: hosting_website,
-            path: '/logs',
-            port: logger_port
-        })
-    ]
-});
-
-logger_app.post('/logs', (req, res) => {
-  logs.push(req.body); // Store received log data
-  res.sendStatus(200);
-});
-
-logger_app.get('/logs', (req, res) => {
-  res.json(logs);
-});
-
-logger_app.listen(logger_port, () => {
-    console.log(`Logger listening on port ${logger_port}!`);
-});
+logRoutes(app)
 
 
 
@@ -260,7 +227,6 @@ app.post("/login", async (req: Request, res: Response): Promise<void> => {
         res.status(401).json({ message: "Invalid credentials"});
         return;
     }
-    
     logger.info(`${email} logging in`);
     const access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN as string);
     res.json({ access_token });
@@ -296,4 +262,14 @@ app.get("/get", verify_Token, async (req: Request, res: Response): Promise<void>
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+});
+
+
+
+
+
+
+app.post('/example', (req, res) => {
+    logger.info('Example route called');
+    res.send('Example route');
 });

@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var bcrypt = require("bcrypt");
 var nodemailer = require("nodemailer");
+var logger_1 = require("./logger");
 var mongoose_1 = require("mongoose");
 var jwt = require("jsonwebtoken");
 var dotenv_1 = require("dotenv");
@@ -49,10 +50,6 @@ var app = express();
 app.use(express.json());
 var port = process.env.PORT || 3000;
 var mongoUrl = process.env.mongoUrl;
-var hosting_website = process.env.hosting_website;
-var logger_port = process.env.logger_port || 10001;
-var logger_app = express();
-logger_app.use(express.json());
 var sender = {
     email: process.env.email,
     pass: process.env.pass
@@ -85,27 +82,9 @@ function send_email(reciever_email, subject, text) {
         console.log('Email sent: ' + info.response);
     });
 }
-var logs = [];
-var logger = winston.createLogger({
-    level: 'info',
-    transports: [
-        new transports.Http({
-            host: hosting_website,
-            path: '/logs',
-            port: logger_port
-        })
-    ]
-});
-logger_app.post('/logs', function (req, res) {
-    logs.push(req.body); // Store received log data
-    res.sendStatus(200);
-});
-logger_app.get('/logs', function (req, res) {
-    res.json(logs);
-});
-logger_app.listen(logger_port, function () {
-    console.log("Logger listening on port ".concat(logger_port, "!"));
-});
+//send_email('gjc.aarish.ansari@gnkhalsa.edu.in','check','succ');
+// Logger with Winston
+(0, logger_1.logRoutes)(app);
 var connection = function () { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
     return __generator(this, function (_a) {
@@ -183,7 +162,7 @@ app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, newuser.save()];
             case 4:
                 _b.sent();
-                logger.info("".concat(email, " signup"));
+                logger_1.logger.info("".concat(email, " signup"));
                 res.status(201).json({
                     message: "email sent successfully",
                     user: newuser
@@ -215,7 +194,7 @@ app.post("/verify_email", function (req, res) { return __awaiter(void 0, void 0,
                 return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, otp: "" })];
             case 2:
                 _b.sent();
-                logger.info("".concat(email, " verified email"));
+                logger_1.logger.info("".concat(email, " verified email"));
                 res.status(200).json({
                     message: "Email verified successfully",
                     user: user
@@ -237,7 +216,7 @@ app.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, func
                 return [4 /*yield*/, User.find()];
             case 1:
                 users = _a.sent();
-                logger.info("data fetched");
+                logger_1.logger.info("data fetched");
                 res.status(200).json({
                     message: "Data fetched successfully",
                     data: users
@@ -281,7 +260,7 @@ app.put('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, f
                     res.status(404).json({ message: "User not found" });
                     return [2 /*return*/];
                 }
-                logger.info("object no ".concat(id, "  updated"));
+                logger_1.logger.info("object no ".concat(id, "  updated"));
                 res.status(200).json({
                     message: "User updated successfully",
                     user: user
@@ -314,7 +293,7 @@ app.delete('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0
                     res.status(404).json({ message: "User not found" });
                     return [2 /*return*/];
                 }
-                logger.info("object no ".concat(id, "  deleted"));
+                logger_1.logger.info("object no ".concat(id, "  deleted"));
                 res.status(200).json({
                     message: "User deleted successfully",
                     user: user
@@ -353,7 +332,7 @@ app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0
                     res.status(401).json({ message: "Invalid credentials" });
                     return [2 /*return*/];
                 }
-                logger.info("".concat(email, " logging in"));
+                logger_1.logger.info("".concat(email, " logging in"));
                 access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN);
                 res.json({ access_token: access_token });
                 return [2 /*return*/];
@@ -389,7 +368,7 @@ app.get("/get", verify_Token, function (req, res) { return __awaiter(void 0, voi
                 return [4 /*yield*/, User.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                logger.info("".concat(email, " fetched his data"));
+                logger_1.logger.info("".concat(email, " fetched his data"));
                 if (!user) {
                     res.status(404).json({ message: "User not found" });
                     return [2 /*return*/];
@@ -401,4 +380,8 @@ app.get("/get", verify_Token, function (req, res) { return __awaiter(void 0, voi
 }); });
 app.listen(port, function () {
     console.log("Server is running on port ".concat(port));
+});
+app.post('/example', function (req, res) {
+    logger_1.logger.info('Example route called');
+    res.send('Example route');
 });
