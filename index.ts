@@ -262,7 +262,7 @@ app.post("/login", async (req: Request, res: Response): Promise<void> => {
     }
     
     logger.info(`${email} logging in`);
-    const access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN as string);
+    const access_token = await jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN as string);
     res.json({ access_token });
 });
 
