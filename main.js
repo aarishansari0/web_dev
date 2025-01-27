@@ -98,7 +98,8 @@ logger.on('error', function (err) {
     console.error('Error with logger transport:', err); // Log any errors with the transport
 });
 app.post('/logs', function (req, res) {
-    logs.push(req.body); // Store received log data
+    logs.push(req.body);
+    console.log('Log received:', req.body); // Debug statement
     res.sendStatus(200);
 });
 app.get('/logs', function (req, res) {
