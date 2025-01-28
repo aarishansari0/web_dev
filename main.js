@@ -89,7 +89,7 @@ var logger = winston.createLogger({
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: 10000,
+            port: 443, // Use port 443 for HTTPS
             ssl: true
         })
     ]
@@ -101,6 +101,10 @@ app.post('/logs', function (req, res) {
     logs.push(req.body);
     console.log('Log received:', req.body); // Debug statement
     res.sendStatus(200);
+});
+app.post('/example', function (req, res) {
+    logger.info("test");
+    res.send("test");
 });
 app.get('/logs', function (req, res) {
     res.json(logs);

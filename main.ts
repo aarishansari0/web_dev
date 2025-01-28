@@ -67,6 +67,7 @@ interface LogEntry {
 
 let logs: LogEntry[] = [];
 
+
 const logger = winston.createLogger({
     level: 'info',
     transports: [
@@ -74,7 +75,7 @@ const logger = winston.createLogger({
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: 10000,
+            port: 443, // Use port 443 for HTTPS
             ssl: true
         })
     ]
@@ -90,11 +91,14 @@ app.post('/logs', (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/example', (req, res) => {
+    logger.info("test")
+    res.send("test")
+})
 
-app.get('/logs', (req: any, res: any) => {
+app.get('/logs', (req, res) => {
     res.json(logs);
 });
-
 
 const connection = async () => {
     try {
