@@ -47,6 +47,7 @@ var winston = require("winston");
 var transports = winston.transports;
 var app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 var port = process.env.port || 10000;
 var mongoUrl = process.env.mongoUrl;
 var sender = {
@@ -159,7 +160,7 @@ var userSchema = new mongoose_1.Schema({
 });
 var User = (0, mongoose_1.model)("User", userSchema);
 app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, first_name, last_name, email, password, user, hash_password, code_num, code, newuser, error_2;
+    var _a, first_name, last_name, email, password, user, hash_password, code, newuser, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -175,8 +176,7 @@ app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, bcrypt.hash(password, 10)];
             case 2:
                 hash_password = _b.sent();
-                code_num = (Math.floor(100000 + Math.random() * 10000));
-                code = code_num.toString();
+                code = Math.floor(100000 + Math.random() * 900000).toString();
                 newuser = new User({ first_name: first_name, last_name: last_name, email: email, password: hash_password, code: code });
                 //newuser.otp = code;
                 return [4 /*yield*/, send_email(email, "Verification", code)];
@@ -221,7 +221,6 @@ app.post("/verify_email", function (req, res) { return __awaiter(void 0, void 0,
                 logger.info("".concat(email, " verified email"));
                 res.status(200).json({
                     message: "Email verified successfully",
-                    user: user
                 });
                 return [2 /*return*/];
             case 3:

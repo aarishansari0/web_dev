@@ -15,6 +15,8 @@ const { transports } = winston;
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+ 
 const port = process.env.port || 10000;
 const mongoUrl = process.env.mongoUrl as string;
 
@@ -150,8 +152,7 @@ app.post('/', async (req, res) => {
             return;
         }
         const hash_password = await bcrypt.hash(password, 10);
-        let code_num = (Math.floor(100000 + Math.random() * 10000));
-        let code = code_num.toString();
+        let code = Math.floor(100000 + Math.random() * 900000).toString();
         
         let newuser = new User({ first_name,    last_name, email, password: hash_password,code });
         //newuser.otp = code;
@@ -179,7 +180,6 @@ app.post("/verify_email", async(req: Request, res: Response) => {
         logger.info(`${email} verified email`);
         res.status(200).json({ 
             message: "Email verified successfully",
-            user: user
         });
         return;
     } else {
