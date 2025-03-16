@@ -8,14 +8,17 @@ import * as jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 config();
 import * as winston from 'winston';
+
 import { hash } from 'crypto';
 import { send } from 'process';
 import { log } from 'console';
 const { transports } = winston;
 
 const app = express();
+const path = require('path');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
  
 const port = process.env.port || 10000;
 const mongoUrl = process.env.mongoUrl as string;
@@ -142,6 +145,15 @@ const userSchema = new Schema({
 });
 
 const User = model("User", userSchema);
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'registration.html'));
+});
+
+app.get('/verify-email', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form.html'));
+});
+
 
 app.post('/', async (req, res) => {
     try {

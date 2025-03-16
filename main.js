@@ -46,8 +46,10 @@ var dotenv_1 = require("dotenv");
 var winston = require("winston");
 var transports = winston.transports;
 var app = express();
+var path = require('path');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 var port = process.env.port || 10000;
 var mongoUrl = process.env.mongoUrl;
 var sender = {
@@ -159,6 +161,12 @@ var userSchema = new mongoose_1.Schema({
     }
 });
 var User = (0, mongoose_1.model)("User", userSchema);
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'registration.html'));
+});
+app.get('/verify-email', function (req, res) {
+    res.sendFile(path.join(__dirname, 'form.html'));
+});
 app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, first_name, last_name, email, password, user, hash_password, code, newuser, error_2;
     return __generator(this, function (_b) {
