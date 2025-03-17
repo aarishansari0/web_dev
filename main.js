@@ -234,7 +234,7 @@ app.post("/verify_email", function (req, res) { return __awaiter(void 0, void 0,
                     res.status(400).json({ message: "Email already verified" });
                     return [2 /*return*/];
                 }
-                if (!(req.body.otp === otp && req.body.email === email)) return [3 /*break*/, 3];
+                if (!(otp === user.code && req.body.email === user.email)) return [3 /*break*/, 3];
                 return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, code: "" })];
             case 2:
                 _b.sent();

@@ -199,7 +199,7 @@ app.post("/verify_email", async(req: Request, res: Response) => {
         res.status(400).json({ message: "Email already verified" });
         return;
     }
-    if (req.body.otp === otp && req.body.email === email) {
+    if (otp === user.code && req.body.email === user.email) {
         await User.findOneAndUpdate({email}, { email_verified: true, code: "" });
         logger.info(`${email} verified email`);
         res.status(200).json({ 
