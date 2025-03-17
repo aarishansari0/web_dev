@@ -141,6 +141,10 @@ const userSchema = new Schema({
     email_verified: {
         type: Boolean,
         default: false
+    },
+    code:{
+        type: String,
+        required: false
     }
 });
 
@@ -166,7 +170,7 @@ app.post('/', async (req, res) => {
         const hash_password = await bcrypt.hash(password, 10);
         let code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        let newuser = new User({ first_name,    last_name, email, password: hash_password,code });
+        let newuser = new User({ first_name, last_name, email, password: hash_password,code: code });
         //newuser.otp = code;
         await send_email(email, "Verification", code);
         await newuser.save();
@@ -187,8 +191,16 @@ app.post('/', async (req, res) => {
 app.post("/verify_email", async(req: Request, res: Response) => {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
+    if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+    }
+    if (user.email_verified) {
+        res.status(400).json({ message: "Email already verified" });
+        return;
+    }
     if (req.body.otp === otp && req.body.email === email) {
-        await User.findOneAndUpdate({email}, { email_verified: true, otp: "" });
+        await User.findOneAndUpdate({email}, { email_verified: true, code: "" });
         logger.info(`${email} verified email`);
         res.status(200).json({ 
             message: "Email verified successfully",

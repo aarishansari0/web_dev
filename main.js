@@ -158,6 +158,10 @@ var userSchema = new mongoose_1.Schema({
     email_verified: {
         type: Boolean,
         default: false
+    },
+    code: {
+        type: String,
+        required: false
     }
 });
 var User = (0, mongoose_1.model)("User", userSchema);
@@ -222,8 +226,16 @@ app.post("/verify_email", function (req, res) { return __awaiter(void 0, void 0,
                 return [4 /*yield*/, User.findOne({ email: email })];
             case 1:
                 user = _b.sent();
+                if (!user) {
+                    res.status(404).json({ message: "User not found" });
+                    return [2 /*return*/];
+                }
+                if (user.email_verified) {
+                    res.status(400).json({ message: "Email already verified" });
+                    return [2 /*return*/];
+                }
                 if (!(req.body.otp === otp && req.body.email === email)) return [3 /*break*/, 3];
-                return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, otp: "" })];
+                return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, code: "" })];
             case 2:
                 _b.sent();
                 logger.info("".concat(email, " verified email"));
