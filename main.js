@@ -171,6 +171,9 @@ app.get('/', function (req, res) {
 app.get('/verify-email', function (req, res) {
     res.sendFile(path.join(__dirname, 'form.html'));
 });
+app.get('/game', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/game.html'));
+});
 app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, first_name, last_name, email, password, user, hash_password, code, newuser, error_2;
     return __generator(this, function (_b) {
