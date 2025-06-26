@@ -46,10 +46,7 @@ var dotenv_1 = require("dotenv");
 var winston = require("winston");
 var transports = winston.transports;
 var app = express();
-var path = require('path');
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 var port = process.env.port || 10000;
 var mongoUrl = process.env.mongoUrl;
 var sender = {
@@ -88,26 +85,16 @@ var logs = [];
 var logger = winston.createLogger({
     level: 'info',
     transports: [
-        new transports.Console(),
         new transports.Http({
             host: 'web-dev-node.onrender.com',
             path: '/logs',
-            port: 443, // Use port 443 for HTTPS
-            ssl: true
+            port: 10000
         })
     ]
 });
-logger.on('error', function (err) {
-    console.error('Error with logger transport:', err); // Log any errors with the transport
-});
 app.post('/logs', function (req, res) {
-    logs.push(req.body);
-    console.log('Log received:', req.body); // Debug statement
+    logs.push(req.body); // Store received log data
     res.sendStatus(200);
-});
-app.post('/example', function (req, res) {
-    logger.info("test");
-    res.send("test");
 });
 app.get('/logs', function (req, res) {
     res.json(logs);
@@ -158,21 +145,11 @@ var userSchema = new mongoose_1.Schema({
     email_verified: {
         type: Boolean,
         default: false
-    },
-    code: {
-        type: String,
-        required: false
     }
 });
 var User = (0, mongoose_1.model)("User", userSchema);
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'registration.html'));
-});
-app.get('/verify-email', function (req, res) {
-    res.sendFile(path.join(__dirname, 'form.html'));
-});
 app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, first_name, last_name, email, password, user, hash_password, code, newuser, error_2;
+    var _a, first_name, last_name, email, password, user, hash_password, code_num, code, newuser, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -188,7 +165,8 @@ app.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, bcrypt.hash(password, 10)];
             case 2:
                 hash_password = _b.sent();
-                code = Math.floor(100000 + Math.random() * 900000).toString();
+                code_num = (Math.floor(100000 + Math.random() * 10000));
+                code = code_num.toString();
                 newuser = new User({ first_name: first_name, last_name: last_name, email: email, password: hash_password, code: code });
                 //newuser.otp = code;
                 return [4 /*yield*/, send_email(email, "Verification", code)];
@@ -226,21 +204,14 @@ app.post("/verify_email", function (req, res) { return __awaiter(void 0, void 0,
                 return [4 /*yield*/, User.findOne({ email: email })];
             case 1:
                 user = _b.sent();
-                if (!user) {
-                    res.status(404).json({ message: "User not found" });
-                    return [2 /*return*/];
-                }
-                if (user.email_verified) {
-                    res.status(400).json({ message: "Email already verified" });
-                    return [2 /*return*/];
-                }
-                if (!(otp === user.code && req.body.email === user.email)) return [3 /*break*/, 3];
-                return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, code: "" })];
+                if (!(req.body.otp === otp && req.body.email === email)) return [3 /*break*/, 3];
+                return [4 /*yield*/, User.findOneAndUpdate({ email: email }, { email_verified: true, otp: "" })];
             case 2:
                 _b.sent();
                 logger.info("".concat(email, " verified email"));
                 res.status(200).json({
                     message: "Email verified successfully",
+                    user: user
                 });
                 return [2 /*return*/];
             case 3:
@@ -356,7 +327,7 @@ app.delete('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); });
 app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, password, user, _b, log_check, access_token;
+    var _a, email, password, user, _b, access_token;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -375,11 +346,7 @@ app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0
                     res.status(401).json({ message: "Invalid credentials" });
                     return [2 /*return*/];
                 }
-                log_check = logger.info("".concat(email, " logging in"));
-                if (!log_check) {
-                    res.status(401).json({ message: "log not recicevd" });
-                    return [2 /*return*/];
-                }
+                logger.info("".concat(email, " logging in"));
                 access_token = jwt.sign({ email: user.email, id: user._id }, process.env.SECRET_ACCESS_TOKEN);
                 res.json({ access_token: access_token });
                 return [2 /*return*/];
